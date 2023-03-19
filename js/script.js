@@ -24,7 +24,7 @@ function getRndInteger(min, max) {
 
 //Funzione per creare il quadrato e associare un ID in base alla riga e colonna
 function createSquare(nRow, nCol, nSquare) {
-    const square = createChild ("div",["square"], nSquare);
+    const square = createChild ("div",["square", "hide"], nSquare);
     square.id = `${nRow}-${nCol}`;
     return square;
 }
@@ -96,12 +96,16 @@ function play (e) {
     const allSquares = Array.from(document.querySelectorAll(".square"));
     console.log(allBombs);
 
-    //Per ogni quadrato aggiungo la bomba
+    //Posiziono le bombe
     for (let i = 0; i < allSquares.length; i++) {
         if (allBombs.includes(i)) {
             const cellBomb = allSquares[i];
-            cellBomb.classList.add("bomb");     
+            cellBomb.classList.add("bomb");
+            cellBomb.innerHTML = `<i class="fa-solid fa-bomb"></i>`     
         }
+        allSquares[i].addEventListener("click", function(){
+            allSquares[i].classList.remove("hide")
+        })
     }
 
     //Ottengo l'array con la posizone di tutte le bombe
@@ -115,7 +119,31 @@ function play (e) {
     console.log(around);
         for(let j = 0; j < around.length; j++){
         if(around[j] && !around[j].classList.contains("bomb")) {
-            around[j].innerText += 1;
+            around[j].classList.add("num")
+            if (around[j].textContent == 1){
+                around[j].textContent = 2;
+            }
+            else if (around[j].textContent == 2){
+                around[j].textContent = 3;
+            }
+            else if (around[j].textContent == 3){
+                around[j].textContent = 4;
+            }
+            else if (around[j].textContent == 4){
+                around[j].textContent = 5;
+            }
+            else if (around[j].textContent == 5){
+                around[j].textContent = 6;
+            }
+            else if (around[j].textContent == 6){
+                around[j].textContent = 7;
+            }
+            else if (around[j].textContent == 7){
+                around[j].textContent = 8;
+            }
+            else {
+                around[j].textContent = 1;
+            }
         }
         }
     }
