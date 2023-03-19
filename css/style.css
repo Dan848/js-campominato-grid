@@ -1,0 +1,23 @@
+main {
+    height: calc(100vh - 160px);
+}
+
+header, footer {
+    height: 80px;
+}
+
+#playBoard {
+    height: 500px;
+    width: 500px;
+    border: 1px solid white;
+}
+
+.square {
+    height: calc(100% / var(--squareSide));
+    width: calc(100% / var(--squareSide));
+    background-color: brown;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dotted white;
+}
