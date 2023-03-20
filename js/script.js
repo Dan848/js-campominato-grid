@@ -1,3 +1,11 @@
+/*
+L'utente clicca su un bottone che genererà una griglia di gioco quadrata.
+Ogni cella ha un numero progressivo, da 1 a 100.
+Ci saranno quindi 10 caselle per ognuna delle 10 righe.
+Quando l'utente clicca su ogni cella, la cella cliccata si colora di azzurro ed emetto un messaggio in console con il numero della cella cliccata.
+*/
+
+//Collego l'elemento Form allo script
 const levelForm = document.getElementById("levelForm");
 levelForm.addEventListener("submit", play);
 
@@ -41,7 +49,10 @@ function createBombs(nBomb, nSquares){
     return bombs;
 }
 
-function checkAround(n1, n2){
+//Funzione per "controllare" tutti e 8 i quadrati attoro a quello selezionato
+function checkAround(elemement){
+    const n1 = parseInt(elemement.id.split("-")[0]);
+    const n2 = parseInt(elemement.id.split("-")[1]);
     const squareAround = [
     document.getElementById(`${n1-1}-${n2-1}`),
     document.getElementById(`${n1-1}-${n2}`),
@@ -101,50 +112,58 @@ function play (e) {
         if (allBombs.includes(i)) {
             const cellBomb = allSquares[i];
             cellBomb.classList.add("bomb");
-            cellBomb.innerHTML = `<i class="fa-solid fa-bomb"></i>`     
+            cellBomb.innerHTML = `<i class="fa-solid fa-bomb"></i>`;
         }
+        //RIPRENDI IL CODICE DA QUI Aggiungo il click ad ogni quadrato PS: forse meglio farlo in un altro ciclo for
         allSquares[i].addEventListener("click", function(){
-            allSquares[i].classList.remove("hide")
+            if(allSquares[i].classList.contains("bomb")){
+                for (let j = 0; j < allSquares.length; j++){
+                    if (allSquares[j].classList.contains("bomb")) {
+                    allSquares[j].classList.remove("hide");
+                    }
+                }
+                return document.getElementById("score").innerText = "HAI PERSO!"
+                
+            }
+            allSquares[i].classList.remove("hide");
+
         })
     }
-
     //Ottengo l'array con la posizone di tutte le bombe
-    const bombsDone = Array.from(document.querySelectorAll(".bomb"));
-    console.log(bombsDone);
+    const bombsLoaded = Array.from(document.querySelectorAll(".bomb"));
+    console.log(bombsLoaded);
     //Piazzo attorno ad ogni bomba un numero che indica quante bombe ho vicine
-    for(let i = 0; i < bombsDone.length; i++){
-    const x = parseInt(bombsDone[i].id.split("-")[0]);
-    const y = parseInt(bombsDone[i].id.split("-")[1]);
-    const around = checkAround(x, y);
+    for(let i = 0; i < bombsLoaded.length; i++){
+    const around = checkAround(bombsLoaded[i]);
     console.log(around);
         for(let j = 0; j < around.length; j++){
-        if(around[j] && !around[j].classList.contains("bomb")) {
-            around[j].classList.add("num")
-            if (around[j].textContent == 1){
-                around[j].textContent = 2;
+            if(around[j] && !around[j].classList.contains("bomb")) {
+                around[j].classList.add("num")
+                if (around[j].textContent == 1){
+                    around[j].textContent = 2;
+                }
+                else if (around[j].textContent == 2){
+                    around[j].textContent = 3;
+                }
+                else if (around[j].textContent == 3){
+                    around[j].textContent = 4;
+                }
+                else if (around[j].textContent == 4){
+                    around[j].textContent = 5;
+                }
+                else if (around[j].textContent == 5){
+                    around[j].textContent = 6;
+                }
+                else if (around[j].textContent == 6){
+                    around[j].textContent = 7;
+                }
+                else if (around[j].textContent == 7){
+                    around[j].textContent = 8;
+                }
+                else {
+                    around[j].textContent = 1;
+                }
             }
-            else if (around[j].textContent == 2){
-                around[j].textContent = 3;
-            }
-            else if (around[j].textContent == 3){
-                around[j].textContent = 4;
-            }
-            else if (around[j].textContent == 4){
-                around[j].textContent = 5;
-            }
-            else if (around[j].textContent == 5){
-                around[j].textContent = 6;
-            }
-            else if (around[j].textContent == 6){
-                around[j].textContent = 7;
-            }
-            else if (around[j].textContent == 7){
-                around[j].textContent = 8;
-            }
-            else {
-                around[j].textContent = 1;
-            }
-        }
         }
     }
 }
