@@ -9,6 +9,12 @@ Quando l'utente clicca su ogni cella, la cella cliccata si colora di azzurro ed 
 const levelForm = document.getElementById("levelForm");
 levelForm.addEventListener("submit", play);
 
+//Funzione per aggiungere un array di classi
+function addClasses (element, classes) {
+    for (const _class of classes) {
+        element.classList.toggle(_class);
+    }
+}
 
 //Funzione per creare un tag HTML, assegnargli un array di classi e stampare al suo interno del testo
 function createChild(tagName, classes, text) {
@@ -16,13 +22,6 @@ function createChild(tagName, classes, text) {
     newElement.innerHTML = text;
     addClasses(newElement, classes);
     return newElement;
-}
-
-//Funzione per aggiungere un array di classi
-function addClasses (element, classes) {
-    for (const _class of classes) {
-        element.classList.toggle(_class);
-    }
 }
 
 //Funzione per generare un numero randomico tra min (compreso) e max (non compreso)
@@ -49,7 +48,7 @@ function createBombs(nBomb, nSquares){
     return bombs;
 }
 
-//Funzione per "controllare" tutti e 8 i quadrati attoro a quello selezionato
+//Funzione per "controllare" tutti e 8 i quadrati attorno a quello selezionato/cliccato
 function checkAround(elemement){
     const n1 = parseInt(elemement.id.split("-")[0]);
     const n2 = parseInt(elemement.id.split("-")[1]);
@@ -66,18 +65,36 @@ function checkAround(elemement){
     return squareAround;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 function play (e) {
     e.preventDefault();
     //Prendo il valore del livello selezionato
     const level = document.getElementById("levelSelect").value;
+    const printScore = document.getElementById("score");
+    printScore.innerText = "Partita in Corso"
+
     //Numero di bombe
     const numBombs = 16;
+
     //Aggancio l'elemento del DOM #playBoard...
     const playBoard = document.getElementById("playBoard");
     //...lo svuoto prima di inserire altri elementi
     playBoard.innerHTML = "";
-    let squareSide;
+
     //Imposto quanti quadrati per lato in base al livello
+    let squareSide;
+    
     switch (level) {
         case "easy":
             squareSide = 10;
@@ -94,18 +111,15 @@ function play (e) {
 
     //Associo a una variabile CSS il numero di quadrati per lato, così da poterli dimensionare correttamente
     document.documentElement.style.setProperty('--squareSide', squareSide);
-    let squareNumber = "";
     for (let i = 1; i <= squareSide; i++){
         for (let j=1; j <= squareSide; j++){
-            playBoard.append(createSquare(i, j, squareNumber));
-            // squareNumber++;
+            playBoard.append(createSquare(i, j, ""));
         }
     }
 
     //Creo un array per le bombe e per i quadrati
     const allBombs = createBombs(numBombs, squareSide*squareSide);
     const allSquares = Array.from(document.querySelectorAll(".square"));
-    console.log(allBombs);
 
     //Posiziono le bombe
     for (let i = 0; i < allSquares.length; i++) {
@@ -114,28 +128,13 @@ function play (e) {
             cellBomb.classList.add("bomb");
             cellBomb.innerHTML = `<i class="fa-solid fa-bomb"></i>`;
         }
-        //RIPRENDI IL CODICE DA QUI Aggiungo il click ad ogni quadrato PS: forse meglio farlo in un altro ciclo for
-        allSquares[i].addEventListener("click", function(){
-            if(allSquares[i].classList.contains("bomb")){
-                for (let j = 0; j < allSquares.length; j++){
-                    if (allSquares[j].classList.contains("bomb")) {
-                    allSquares[j].classList.remove("hide");
-                    }
-                }
-                return document.getElementById("score").innerText = "HAI PERSO!"
-                
-            }
-            allSquares[i].classList.remove("hide");
-
-        })
     }
     //Ottengo l'array con la posizone di tutte le bombe
     const bombsLoaded = Array.from(document.querySelectorAll(".bomb"));
-    console.log(bombsLoaded);
+
     //Piazzo attorno ad ogni bomba un numero che indica quante bombe ho vicine
     for(let i = 0; i < bombsLoaded.length; i++){
     const around = checkAround(bombsLoaded[i]);
-    console.log(around);
         for(let j = 0; j < around.length; j++){
             if(around[j] && !around[j].classList.contains("bomb")) {
                 around[j].classList.add("num")
@@ -165,5 +164,47 @@ function play (e) {
                 }
             }
         }
+    }
+
+    //AGGIUNGO IL CLICK AI QUADRATI
+    for(let i = 0; i < allSquares.length; i++){
+        allSquares[i].addEventListener("click", function () {
+
+            //Se al click contiene una bomba...
+            if(allSquares[i].classList.contains("bomb")){
+                //...cerca ogni bomba e rendila visibile
+                for (let j = 0; j < allSquares.length; j++){
+
+                    if (allSquares[j].classList.contains("bomb")) {
+                    allSquares[j].classList.remove("hide");
+                    }
+                }
+                return printScore.innerText = "HAI PERSO!"
+            }
+
+            //Se al click contiene un numero...
+            else if (allSquares[i].classList.contains("num")){
+                //...rendilo visibile e basta
+                allSquares[i].classList.remove("hide");
+            }    
+
+            //Se al click contiene una cella vuota...
+            else if (!allSquares[i].classList.contains("num") && !allSquares[i].classList.contains("bomb")){
+                //...rendila visibile
+                allSquares[i].classList.remove("hide");
+                //...crea un array con le celle attorno
+                const around = checkAround(allSquares[i]);
+                    //Per ogni cella attorno...
+                for (let j = 0; j < around.length; j++) {
+                    //...se esiste ed è vuota simula un click...
+                    if (around[j] && !around[j].classList.contains("bomb") && !around[j].classList.contains("num")){
+                        around[j].click();
+                    }
+                    //... se esiste e non è vuota rendila visibile
+                    else if (around[j])
+                    around[j].classList.remove("hide");
+                }
+            }
+        })
     }
 }
