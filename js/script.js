@@ -65,20 +65,9 @@ function checkAround(elemement){
     return squareAround;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 function play (e) {
     e.preventDefault();
+    let gameStatus = 0;
     //Prendo il valore del livello selezionato
     const level = document.getElementById("levelSelect").value;
     const printScore = document.getElementById("score");
@@ -171,7 +160,7 @@ function play (e) {
         allSquares[i].addEventListener("click", function () {
 
             //Se al click contiene una bomba...
-            if(allSquares[i].classList.contains("bomb")){
+            if(allSquares[i].classList.contains("bomb") && gameStatus === 0){
                 //...cerca ogni bomba e rendila visibile
                 for (let j = 0; j < allSquares.length; j++){
 
@@ -179,17 +168,18 @@ function play (e) {
                     allSquares[j].classList.remove("hide");
                     }
                 }
+                gameStatus = 1;
                 return printScore.innerText = "HAI PERSO!"
             }
 
             //Se al click contiene un numero...
-            else if (allSquares[i].classList.contains("num")){
+            else if (allSquares[i].classList.contains("num") && gameStatus === 0){
                 //...rendilo visibile e basta
                 allSquares[i].classList.remove("hide");
             }    
 
             //Se al click contiene una cella vuota...
-            else if (!allSquares[i].classList.contains("num") && !allSquares[i].classList.contains("bomb")){
+            else if (!allSquares[i].classList.contains("num") && !allSquares[i].classList.contains("bomb") && gameStatus === 0){
                 //...rendila visibile
                 allSquares[i].classList.remove("hide");
                 //...crea un array con le celle attorno
